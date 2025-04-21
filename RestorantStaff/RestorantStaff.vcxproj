@@ -128,7 +128,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChiefCooker.cpp" />
+    <ClCompile Include="Cleaner.cpp" />
+    <ClCompile Include="Cook.cpp" />
+    <ClCompile Include="Hostess.cpp" />
+    <ClCompile Include="MainWaiter.cpp" />
+    <ClCompile Include="PastyCook.cpp" />
     <ClCompile Include="RestorantStaff.cpp" />
+    <ClCompile Include="Staff.cpp" />
+    <ClCompile Include="Sushef.cpp" />
+    <ClCompile Include="Waiter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ChiefCooker.h" />
+    <ClInclude Include="Cleaner.h" />
+    <ClInclude Include="Cook.h" />
+    <ClInclude Include="Hostess.h" />
+    <ClInclude Include="MainWaiter.h" />
+    <ClInclude Include="PastyCook.h" />
+    <ClInclude Include="Staff.h" />
+    <ClInclude Include="Sushef.h" />
+    <ClInclude Include="Waiter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
