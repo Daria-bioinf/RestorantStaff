@@ -1,31 +1,20 @@
 #pragma once
-#include <cstring>
 #include <iostream>
+#include <string>
 
+using namespace std;
 
-class Staff
-{
+class Staff {
 protected:
-	char Name[20];
-private:
-	int ID;
-	int Age;
+    string name;
 public:
-	Staff() {
-	/*	strcpy(Name, "No Name");
-		ID = 0;
-		Age = 0;*/
-	}
-	Staff(const char* name, int id, int age) {
-	/*	strncpy(Name, name, 19);
-		Name[19] = '\0';
-		ID = id;
-		Age = age;*/
-	}
-	virtual ~Staff() {}
+    Staff(const string& name = "");
+    virtual ~Staff();
 
-	virtual void Show() const {
-		std::cout << "Name: " << Name << ", ID: " << ID << ", Age: " << Age << std::endl;
-	}
+    string getName() const;
+    void setName(const string& newName);
+
+    virtual void show() const = 0;
+    virtual void save(ostream& os) const = 0;
+    virtual void modify() = 0;
 };
-

@@ -5,279 +5,159 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <limits>
+#include "Staff.h"
+#include "Cleaner.h"
+#include "ChiefCooker.h"
+#include "PastyCook.h"
+#include "Sushef.h"
+#include "Hostess.h"
 
 using namespace std;
 
-// Базовый класс Staff
-class Staff {
-protected:
-    string position;
-private:
-    string name;
-public:
-    Staff(string name = "", string position = "") : name(name), position(position) {}
-    virtual ~Staff() {}
-    virtual void show() const = 0;
-    virtual void save(ostream& os) const = 0;
-    virtual void modify() = 0;
-    string getName() const { return name; }
-    void setName(const string& n) { name = n; }
-};
 
-// Cleaner (лист)
-class Cleaner : public Staff {
-private:
-    int speed;
-protected:
-    int salary;
-public:
-    Cleaner(string name = "", int speed = 0, int salary = 0)
-        : Staff(name, "Cleaner"), speed(speed), salary(salary) {
-    }
-    void show() const override {
-        cout << "Cleaner: " << getName() << ", Speed: " << speed << ", Salary: " << salary << endl;
-    }
-    void save(ostream& os) const override {
-        os << "Cleaner " << getName() << " " << speed << " " << salary << endl;
-    }
-    void modify() override {
-        cout << "New Speed and Salary: ";
-        cin >> speed >> salary;
-    }
-};
 
-// Cook
-class Cook : public Staff {
-protected:
-    string cuisine;
-public:
-    Cook(string name = "", string cuisine = "")
-        : Staff(name, "Cook"), cuisine(cuisine) {
-    }
-};
+// ========== Работа с деревом и командами ==========
 
-// ChiefCooker (лист)
-class ChiefCooker : public Cook {
-private:
-    int dishesPerHour;
-protected:
-    int experience;
-public:
-    ChiefCooker(string name = "", string cuisine = "", int dishes = 0, int exp = 0)
-        : Cook(name, cuisine), dishesPerHour(dishes), experience(exp) {
-    }
-    void show() const override {
-        cout << "ChiefCooker: " << getName() << ", Cuisine: " << cuisine
-            << ", Dishes/hour: " << dishesPerHour << ", Experience: " << experience << endl;
-    }
-    void save(ostream& os) const override {
-        os << "ChiefCooker " << getName() << " " << cuisine << " "
-            << dishesPerHour << " " << experience << endl;
-    }
-    void modify() override {
-        cout << "New Cuisine, Dishes/hour and Experience: ";
-        cin >> cuisine >> dishesPerHour >> experience;
-    }
-};
-
-// PastyCook (лист)
-class PastyCook : public Cook {
-private:
-    int cakesPerDay;
-protected:
-    int skill;
-public:
-    PastyCook(string name = "", string cuisine = "", int cakes = 0, int skill = 0)
-        : Cook(name, cuisine), cakesPerDay(cakes), skill(skill) {
-    }
-    void show() const override {
-        cout << "PastyCook: " << getName() << ", Cuisine: " << cuisine
-            << ", Cakes/day: " << cakesPerDay << ", Skill: " << skill << endl;
-    }
-    void save(ostream& os) const override {
-        os << "PastyCook " << getName() << " " << cuisine << " "
-            << cakesPerDay << " " << skill << endl;
-    }
-    void modify() override {
-        cout << "New Cuisine, Cakes/day and Skill: ";
-        cin >> cuisine >> cakesPerDay >> skill;
-    }
-};
-
-// Waiter
-class Waiter : public Staff {
-protected:
-    string language;
-public:
-    Waiter(string name = "", string language = "")
-        : Staff(name, "Waiter"), language(language) {
-    }
-};
-
-// MainWaiter
-class MainWaiter : public Waiter {
-protected:
-    int tables;
-public:
-    MainWaiter(string name = "", string language = "", int tables = 0)
-        : Waiter(name, language), tables(tables) {
-    }
-};
-
-// Hostess (лист)
-class Hostess : public MainWaiter {
-private:
-    int friendliness;
-protected:
-    int greetingScore;
-public:
-    Hostess(string name = "", string language = "", int tables = 0, int greet = 0, int friendly = 0)
-        : MainWaiter(name, language, tables), greetingScore(greet), friendliness(friendly) {
-    }
-    void show() const override {
-        cout << "Hostess: " << getName() << ", Language: " << language
-            << ", Tables: " << tables << ", Greeting: " << greetingScore
-            << ", Friendliness: " << friendliness << endl;
-    }
-    void save(ostream& os) const override {
-        os << "Hostess " << getName() << " " << language << " "
-            << tables << " " << greetingScore << " " << friendliness << endl;
-    }
-    void modify() override {
-        cout << "New Language, Tables, Greeting Score and Friendliness: ";
-        cin >> language >> tables >> greetingScore >> friendliness;
-    }
-};
-
-// Sushef (лист)
-class Sushef : public Waiter {
-private:
-    int specialOrders;
-protected:
-    int accuracy;
-public:
-    Sushef(string name = "", string language = "", int orders = 0, int accuracy = 0)
-        : Waiter(name, language), specialOrders(orders), accuracy(accuracy) {
-    }
-    void show() const override {
-        cout << "Sushef: " << getName() << ", Language: " << language
-            << ", Special Orders: " << specialOrders << ", Accuracy: " << accuracy << endl;
-    }
-    void save(ostream& os) const override {
-        os << "Sushef " << getName() << " " << language << " "
-            << specialOrders << " " << accuracy << endl;
-    }
-    void modify() override {
-        cout << "New Language, Special Orders and Accuracy: ";
-        cin >> language >> specialOrders >> accuracy;
-    }
-};
-
-// Дерево структуры
 map<string, vector<shared_ptr<Staff>>> tree = {
-    {"Cleaner", {}}, {"ChiefCooker", {}}, {"PastyCook", {}},
-    {"Sushef", {}}, {"Hostess", {}}
+    {"Cleaner", {}}, {"ChiefCooker", {}}, {"PastyCook", {}}, {"Sushef", {}}, {"Hostess", {}}
 };
 
-// Навигация
 string currentNode;
 
-// Проверка: является ли узел листом
 bool isLeaf(const string& node) {
-    return (node == "Cleaner" || node == "ChiefCooker" || node == "PastyCook" || node == "Sushef" || node == "Hostess");
+    return node == "Cleaner" || node == "ChiefCooker" || node == "PastyCook" || node == "Sushef" || node == "Hostess";
 }
 
-// Показ структуры
 void cmdTREE() {
-    cout << "Staff\n";
-    cout << " |- Cleaner\n";
-    cout << " |- Cook\n";
-    cout << "    |- ChiefCooker\n";
-    cout << "    |- PastyCook\n";
-    cout << " |- Waiter\n";
-    cout << "    |- MainWaiter\n";
-    cout << "       |- Hostess\n";
-    cout << "    |- Sushef\n";
+    cout << "Staff\n"
+        << " |- Cleaner\n"
+        << " |- Cook\n"
+        << "    |- ChiefCooker\n"
+        << "    |- PastyCook\n"
+        << " |- Waiter\n"
+        << "    |- MainWaiter\n"
+        << "       |- Hostess\n"
+        << "    |- Sushef\n";
 }
 
 void cmdCD(const string& node) {
-    currentNode = node;
-    cout << "Moved to " << node << endl;
+    if (isLeaf(node)) {
+        currentNode = node;
+        cout << "Moved to " << node << endl;
+    }
+    else {
+        cout << "Cannot move to " << node << ". Only leaf classes allowed.\n";
+    }
 }
 
+// (Далее идут команды MO, DO, MDO, DIR, SHOW, SAVE, READ, menu() и main())
+
+// Создание нового объекта
 void cmdMO(const string& objName) {
     if (!isLeaf(currentNode)) {
         cout << "Cannot create object here! Only in leaf nodes.\n";
         return;
     }
+
+    // Проверка на уникальность имени
+    for (auto& obj : tree[currentNode]) {
+        if (obj->getName() == objName) {
+            cout << "An object with this name already exists. Creation aborted.\n";
+            return;
+        }
+    }
+
     if (currentNode == "Cleaner") {
         int speed, salary;
-        cout << "Enter Speed and Salary: ";
-        cin >> speed >> salary;
+        cout << "Enter Speed: ";
+        if (!(cin >> speed)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Salary: ";
+        if (!(cin >> salary)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
         tree[currentNode].push_back(make_shared<Cleaner>(objName, speed, salary));
     }
     else if (currentNode == "ChiefCooker") {
         string cuisine;
         int dishes, experience;
-        cout << "Enter Cuisine, Dishes/hour, Experience: ";
-        cin >> cuisine >> dishes >> experience;
+        cout << "Enter Cuisine: ";
+        if (!(cin >> cuisine)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Dishes/hour: ";
+        if (!(cin >> dishes)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Experience: ";
+        if (!(cin >> experience)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
         tree[currentNode].push_back(make_shared<ChiefCooker>(objName, cuisine, dishes, experience));
     }
     else if (currentNode == "PastyCook") {
         string cuisine;
         int cakes, skill;
-        cout << "Enter Cuisine, Cakes/day, Skill: ";
-        cin >> cuisine >> cakes >> skill;
+        cout << "Enter Cuisine: ";
+        if (!(cin >> cuisine)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Cakes/day: ";
+        if (!(cin >> cakes)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Skill: ";
+        if (!(cin >> skill)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
         tree[currentNode].push_back(make_shared<PastyCook>(objName, cuisine, cakes, skill));
     }
     else if (currentNode == "Sushef") {
         string language;
-        int orders, accuracy;
-        cout << "Enter Language, SpecialOrders, Accuracy: ";
-        cin >> language >> orders >> accuracy;
-        tree[currentNode].push_back(make_shared<Sushef>(objName, language, orders, accuracy));
+        int specialOrders, accuracy;
+        cout << "Enter Language: ";
+        if (!(cin >> language)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Special Orders: ";
+        if (!(cin >> specialOrders)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Accuracy: ";
+        if (!(cin >> accuracy)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        tree[currentNode].push_back(make_shared<Sushef>(objName, language, specialOrders, accuracy));
     }
     else if (currentNode == "Hostess") {
         string language;
-        int tables, greet, friendly;
-        cout << "Enter Language, Tables, Greeting, Friendliness: ";
-        cin >> language >> tables >> greet >> friendly;
-        tree[currentNode].push_back(make_shared<Hostess>(objName, language, tables, greet, friendly));
+        int tables, greetScore, friendliness;
+        cout << "Enter Language: ";
+        if (!(cin >> language)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Tables: ";
+        if (!(cin >> tables)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Greeting Score: ";
+        if (!(cin >> greetScore)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cout << "Enter Friendliness: ";
+        if (!(cin >> friendliness)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        tree[currentNode].push_back(make_shared<Hostess>(objName, language, tables, greetScore, friendliness));
     }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
+// Удаление объекта
 void cmdDO(const string& objName) {
     auto& objs = tree[currentNode];
     objs.erase(remove_if(objs.begin(), objs.end(), [&](auto& obj) { return obj->getName() == objName; }), objs.end());
     cout << "Deleted (if existed): " << objName << endl;
 }
 
+// Модификация объекта
 void cmdMDO(const string& objName) {
+    if (objName.empty()) {
+        cout << "Please specify object name.\n";
+        return;
+    }
+
     for (auto& obj : tree[currentNode]) {
         if (obj->getName() == objName) {
             obj->modify();
             return;
         }
     }
+
     cout << "Object not found.\n";
 }
 
+// Показ списка объектов
 void cmdDIR() {
-    if (isLeaf(currentNode)) {
+    if (tree.find(currentNode) != tree.end()) {
         for (auto& obj : tree[currentNode])
             cout << obj->getName() << endl;
     }
-    else {
-        for (auto it = tree.begin(); it != tree.end(); ++it) {
-            if (it->first.find(currentNode) != string::npos) {
-                for (auto& obj : it->second)
-                    cout << obj->getName() << endl;
-            }
-        }
-    }
 }
 
-
+// Показ деталей объекта
 void cmdSHOW(const string& objName) {
     for (auto& obj : tree[currentNode]) {
         if (obj->getName() == objName) {
@@ -288,26 +168,36 @@ void cmdSHOW(const string& objName) {
     cout << "Object not found.\n";
 }
 
+// Сохранение всех объектов в файл
 void cmdSAVE() {
     ofstream ofs("staff.txt");
+    if (!ofs.is_open()) {
+        cout << "Error: Cannot open staff.txt\n";
+        return;
+    }
+
     for (auto it = tree.begin(); it != tree.end(); ++it) {
         for (auto& obj : it->second) {
             obj->save(ofs);
         }
     }
+    ofs.close();
     cout << "Saved to staff.txt\n";
 }
 
 
+// Загрузка объектов из файла
 void cmdREAD() {
     ifstream ifs("staff.txt");
     if (!ifs.is_open()) {
-        cout << "Cannot open staff.txt\n";
+        cout << "Error: Cannot open staff.txt\n";
         return;
     }
+
     for (auto it = tree.begin(); it != tree.end(); ++it) {
         it->second.clear();
     }
+
     string type;
     while (ifs >> type) {
         if (type == "Cleaner") {
@@ -330,9 +220,9 @@ void cmdREAD() {
         }
         else if (type == "Sushef") {
             string name, language;
-            int orders, accuracy;
-            ifs >> name >> language >> orders >> accuracy;
-            tree["Sushef"].push_back(make_shared<Sushef>(name, language, orders, accuracy));
+            int specialOrders, accuracy;
+            ifs >> name >> language >> specialOrders >> accuracy;
+            tree["Sushef"].push_back(make_shared<Sushef>(name, language, specialOrders, accuracy));
         }
         else if (type == "Hostess") {
             string name, language;
@@ -345,6 +235,7 @@ void cmdREAD() {
     cout << "Loaded from staff.txt\n";
 }
 
+// Меню команд
 void menu() {
     cout << "Commands: CD <node>, MO <name>, DO <name>, MDO <name>, DIR, SHOW <name>, SAVE, READ, TREE, EXIT\n";
     string line, cmd, arg;
@@ -367,6 +258,7 @@ void menu() {
     }
 }
 
+// Главная функция
 int main() {
     menu();
     return 0;

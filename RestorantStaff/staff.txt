@@ -1,5 +1,1 @@
-ChiefCooker Alex Italian 20 10
-Cleaner John 5 300
-Hostess Anna English 12 90 100
-PastyCook Mary French 15 8
-Sushef Tom Spanish 7 95
+
