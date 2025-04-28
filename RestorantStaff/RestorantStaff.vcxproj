@@ -134,7 +134,7 @@
     <ClCompile Include="Hostess.cpp" />
     <ClCompile Include="MainWaiter.cpp" />
     <ClCompile Include="PastyCook.cpp" />
-    <ClCompile Include="RestorantStaff.cpp" />
+    <ClCompile Include="RestaurantStaff.cpp" />
     <ClCompile Include="Staff.cpp" />
     <ClCompile Include="Sushef.cpp" />
     <ClCompile Include="Waiter.cpp" />
