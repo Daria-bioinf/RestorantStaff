@@ -1,10 +1,10 @@
 // Hostess.h
 #pragma once
-#include "Staff.h"
+#include "MainWaiter.h"
 #include <iostream>
 #include <string>
 
-class Hostess : public Staff {
+class Hostess : public MainWaiter {
 protected:
     string language;
 private:

@@ -26,7 +26,12 @@ map<string, vector<shared_ptr<Staff>>> tree = {
 string currentNode;
 
 bool isLeaf(const string& node) {
-    return node == "Cleaner" || node == "ChiefCooker" || node == "PastyCook" || node == "Sushef" || node == "Hostess";
+    if (node == "Cleaner" || node == "ChiefCooker" || node == "PastyCook" || node == "Sushef" || node == "Hostess") {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void cmdTREE() {
@@ -34,11 +39,12 @@ void cmdTREE() {
         << " |- Cleaner\n"
         << " |- Cook\n"
         << "    |- ChiefCooker\n"
+        << "      |- Sushef\n"
         << "    |- PastyCook\n"
         << " |- Waiter\n"
         << "    |- MainWaiter\n"
-        << "       |- Hostess\n"
-        << "    |- Sushef\n";
+        << "       |- Hostess\n";
+
 }
 
 void cmdCD(const string& node) {

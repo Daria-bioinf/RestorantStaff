@@ -1,9 +1,9 @@
 #pragma once
-#include "Staff.h"
+#include "Cook.h"
 #include <iostream>
 #include <string>
 
-class ChiefCooker : public Staff {
+class ChiefCooker : public Cook {
 protected:
     string cuisine;
 private:

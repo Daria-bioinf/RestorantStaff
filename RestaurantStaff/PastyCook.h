@@ -1,10 +1,10 @@
 // PastyCook.h
 #pragma once
-#include "Staff.h"
+#include "Cook.h"
 #include <iostream>
 #include <string>
 
-class PastyCook : public Staff {
+class PastyCook : public Cook {
 protected:
     string cuisine;
 private:

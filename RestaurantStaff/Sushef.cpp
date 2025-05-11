@@ -2,7 +2,7 @@
 #include <limits>
 
 Sushef::Sushef(const string& name, const string& language, int orders, int acc)
-    : Staff(name), language(language), specialOrders(orders), accuracy(acc) {
+    : ChiefCooker(name), language(language), specialOrders(orders), accuracy(acc) {
 }
 
 void Sushef::show() const {

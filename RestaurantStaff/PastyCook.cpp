@@ -2,7 +2,7 @@
 #include <limits>
 
 PastyCook::PastyCook(const string& name, const string& cuisine, int cakes, int skill)
-    : Staff(name), cuisine(cuisine), cakesPerDay(cakes), skill(skill) {
+    : Cook (name), cuisine(cuisine), cakesPerDay(cakes), skill(skill) {
 }
 
 void PastyCook::show() const {
