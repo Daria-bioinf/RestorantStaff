@@ -55,13 +55,24 @@ void cmdCD(const string& node) {
 // (The following commands are MO, DO, MDO, DIR, SHOW, SAVE, READ, menu() and main())
 
 // Create a new object
+int getIntInput(const string& prompt) {
+    int value;
+    cout << prompt;
+    while (!(cin >> value)) {
+        cout << "Invalid input. Please try again: ";
+        cin.clear();
+        cin.ignore(10000, '\n');
+    }
+    cin.ignore(10000, '\n');
+    return value;
+}
+
 void cmdMO(const string& objName) {
     if (!isLeaf(currentNode)) {
         cout << "Cannot create object here! Only in leaf nodes.\n";
         return;
     }
 
-    // Check for uniqueness of name
     for (auto& obj : tree[currentNode]) {
         if (obj->getName() == objName) {
             cout << "An object with this name already exists. Creation aborted.\n";
@@ -70,60 +81,43 @@ void cmdMO(const string& objName) {
     }
 
     if (currentNode == "Cleaner") {
-        int speed, salary;
-        cout << "Enter Speed: ";
-        if (!(cin >> speed)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Salary: ";
-        if (!(cin >> salary)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        int speed = getIntInput("Enter Speed: ");
+        int salary = getIntInput("Enter Salary: ");
         tree[currentNode].push_back(make_shared<Cleaner>(objName, speed, salary));
     }
     else if (currentNode == "ChiefCooker") {
         string cuisine;
-        int dishes, experience;
         cout << "Enter Cuisine: ";
-        if (!(cin >> cuisine)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Dishes/hour: ";
-        if (!(cin >> dishes)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Experience: ";
-        if (!(cin >> experience)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cin >> cuisine;
+        int dishes = getIntInput("Enter Dishes/hour: ");
+        int experience = getIntInput("Enter Experience: ");
         tree[currentNode].push_back(make_shared<ChiefCooker>(objName, cuisine, dishes, experience));
     }
     else if (currentNode == "PastyCook") {
         string cuisine;
-        int cakes, skill;
         cout << "Enter Cuisine: ";
-        if (!(cin >> cuisine)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Cakes/day: ";
-        if (!(cin >> cakes)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Skill: ";
-        if (!(cin >> skill)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cin >> cuisine;
+        int cakes = getIntInput("Enter Cakes/day: ");
+        int skill = getIntInput("Enter Skill: ");
         tree[currentNode].push_back(make_shared<PastyCook>(objName, cuisine, cakes, skill));
     }
     else if (currentNode == "Sushef") {
         string language;
-        int specialOrders, accuracy;
         cout << "Enter Language: ";
-        if (!(cin >> language)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Special Orders: ";
-        if (!(cin >> specialOrders)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Accuracy: ";
-        if (!(cin >> accuracy)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cin >> language;
+        int specialOrders = getIntInput("Enter Special Orders: ");
+        int accuracy = getIntInput("Enter Accuracy: ");
         tree[currentNode].push_back(make_shared<Sushef>(objName, language, specialOrders, accuracy));
     }
     else if (currentNode == "Hostess") {
         string language;
-        int tables, greetScore, friendliness;
         cout << "Enter Language: ";
-        if (!(cin >> language)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Tables: ";
-        if (!(cin >> tables)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Greeting Score: ";
-        if (!(cin >> greetScore)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
-        cout << "Enter Friendliness: ";
-        if (!(cin >> friendliness)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); cout << "Invalid input.\n"; return; }
+        cin >> language;
+        int tables = getIntInput("Enter Tables: ");
+        int greetScore = getIntInput("Enter Greeting Score: ");
+        int friendliness = getIntInput("Enter Friendliness: ");
         tree[currentNode].push_back(make_shared<Hostess>(objName, language, tables, greetScore, friendliness));
     }
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 // Deleting an object
