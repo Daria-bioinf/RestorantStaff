@@ -16,8 +16,9 @@
 using namespace std;
 
 
+const string file_name = "staff.txt";
 
-// ========== Работа с деревом и командами ==========
+// ========== Working with the tree and commands ==========
 
 map<string, vector<shared_ptr<Staff>>> tree = {
     {"Cleaner", {}}, {"ChiefCooker", {}}, {"PastyCook", {}}, {"Sushef", {}}, {"Hostess", {}}
@@ -51,16 +52,16 @@ void cmdCD(const string& node) {
     }
 }
 
-// (Далее идут команды MO, DO, MDO, DIR, SHOW, SAVE, READ, menu() и main())
+// (The following commands are MO, DO, MDO, DIR, SHOW, SAVE, READ, menu() and main())
 
-// Создание нового объекта
+// Create a new object
 void cmdMO(const string& objName) {
     if (!isLeaf(currentNode)) {
         cout << "Cannot create object here! Only in leaf nodes.\n";
         return;
     }
 
-    // Проверка на уникальность имени
+    // Check for uniqueness of name
     for (auto& obj : tree[currentNode]) {
         if (obj->getName() == objName) {
             cout << "An object with this name already exists. Creation aborted.\n";
@@ -125,14 +126,14 @@ void cmdMO(const string& objName) {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
-// Удаление объекта
+// Deleting an object
 void cmdDO(const string& objName) {
     auto& objs = tree[currentNode];
     objs.erase(remove_if(objs.begin(), objs.end(), [&](auto& obj) { return obj->getName() == objName; }), objs.end());
     cout << "Deleted (if existed): " << objName << endl;
 }
 
-// Модификация объекта
+// Object modification
 void cmdMDO(const string& objName) {
     if (objName.empty()) {
         cout << "Please specify object name.\n";
@@ -149,7 +150,7 @@ void cmdMDO(const string& objName) {
     cout << "Object not found.\n";
 }
 
-// Показ списка объектов
+// Show list of objects
 void cmdDIR() {
     if (tree.find(currentNode) != tree.end()) {
         for (auto& obj : tree[currentNode])
@@ -157,7 +158,7 @@ void cmdDIR() {
     }
 }
 
-// Показ деталей объекта
+// Show object details
 void cmdSHOW(const string& objName) {
     for (auto& obj : tree[currentNode]) {
         if (obj->getName() == objName) {
@@ -168,9 +169,9 @@ void cmdSHOW(const string& objName) {
     cout << "Object not found.\n";
 }
 
-// Сохранение всех объектов в файл
+// Save all objects to file
 void cmdSAVE() {
-    ofstream ofs("staff.txt");
+    ofstream ofs(file_name);
     if (!ofs.is_open()) {
         cout << "Error: Cannot open staff.txt\n";
         return;
@@ -186,9 +187,9 @@ void cmdSAVE() {
 }
 
 
-// Загрузка объектов из файла
+// Load objects from file
 void cmdREAD() {
-    ifstream ifs("staff.txt");
+    ifstream ifs(file_name);
     if (!ifs.is_open()) {
         cout << "Error: Cannot open staff.txt\n";
         return;
@@ -235,7 +236,7 @@ void cmdREAD() {
     cout << "Loaded from staff.txt\n";
 }
 
-// Меню команд
+// Command menu
 void menu() {
     cout << "Commands: CD <node>, MO <name>, DO <name>, MDO <name>, DIR, SHOW <name>, SAVE, READ, TREE, EXIT\n";
     string line, cmd, arg;
@@ -258,7 +259,7 @@ void menu() {
     }
 }
 
-// Главная функция
+// Main function
 int main() {
     menu();
     return 0;
