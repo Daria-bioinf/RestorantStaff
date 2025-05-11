@@ -3,7 +3,7 @@
 #include <limits>
 
 Hostess::Hostess(const string& name, const string& language, int tables, int greet, int friendly)
-    : Staff(name), language(language), tables(tables), greetingScore(greet), friendliness(friendly) {
+    : MainWaiter(name), language(language), tables(tables), greetingScore(greet), friendliness(friendly) {
 }
 
 void Hostess::show() const {
